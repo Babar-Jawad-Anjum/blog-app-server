@@ -2,6 +2,11 @@ import mongoose, { Schema } from "mongoose";
 
 const userSchema = new Schema(
   {
+    clerkUserId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     username: { type: String, require: true, unique: true },
     email: { type: String, require: true, unique: true },
     img: { type: String },
@@ -11,4 +16,3 @@ const userSchema = new Schema(
 );
 
 export default mongoose.model("User", userSchema);
-

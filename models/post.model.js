@@ -13,7 +13,7 @@ const postSchema = new Schema(
     slug: { type: String, require: true, unique: true },
     desc: { type: String },
     content: { type: String, required: true },
-    isFeatured: { type: Boolean, default: false },
+    isFeatured: { type: Boolean, default: 0 },
     visit: { type: Number, default: 0 },
   },
   { timestamps: true }
