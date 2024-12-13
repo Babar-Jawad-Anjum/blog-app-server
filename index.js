@@ -7,13 +7,22 @@ import userRouter from "./routes/user.route.js";
 import postRouter from "./routes/post.route.js";
 import commentRouter from "./routes/comment.route.js";
 import webHooksRouter from "./routes/webhook.route.js";
+import { clerkMiddleware } from "@clerk/express";
 
 dotenv.config();
 
 const app = express();
-app.use("/api/webhooks", webHooksRouter); // place before express.json() middleware to avoid conflicts
 
+app.use(clerkMiddleware());
+
+app.use("/api/webhooks", webHooksRouter); // place before express.json() middleware to avoid conflicts
 app.use(express.json());
+
+app.get("/auth-state", (req, res) => {
+  const authState = req.auth;
+
+  res.json(authState);
+});
 
 app.use("/api/users", userRouter);
 app.use("/api/posts", postRouter);
