@@ -12,6 +12,7 @@ const postSchema = new Schema(
     title: { type: String, require: true },
     slug: { type: String, require: true, unique: true },
     desc: { type: String },
+    category: { type: String, default: "general" },
     content: { type: String, required: true },
     isFeatured: { type: Boolean, default: 0 },
     visit: { type: Number, default: 0 },
