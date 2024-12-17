@@ -8,8 +8,51 @@ export const getPosts = async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 2;
 
-  const posts = await Post.find()
+  const query = {};
+
+  const cat = req.query.cat;
+  const author = req.query.author;
+  const searchQuery = req.query.search;
+  const sortedQuery = req.query.sort;
+  const featured = req.query.featured;
+
+  if (cat) query.category = cat;
+  if (searchQuery) query.title = { $regex: searchQuery, $options: "i" };
+  if (author) {
+    const user = await User.findOne({ username: author }).select("_id");
+    if (!user) return res.status(404).json("No Post found!");
+    query.user = user._id;
+  }
+
+  let sortObject = { createdAt: -1 };
+
+  if (sortedQuery) {
+    switch (sortedQuery) {
+      case "newest":
+        sortObject = { createdAt: -1 };
+        break;
+      case "oldest":
+        sortObject = { createdAt: 1 };
+        break;
+      case "popular":
+        sortObject = { visit: -1 };
+        break;
+      case "trending":
+        sortObject = { visit: -1 };
+        query.createdAt = {
+          $gte: new Date(new Date().getTime() - 7 * 24 * 60 * 60 * 1000),
+        };
+        break;
+
+      default:
+        break;
+    }
+  }
+  if (featured) query.isFeatured = true;
+
+  const posts = await Post.find(query)
     .populate("user", "username")
+    .sort(sortObject)
     .limit(limit)
     .skip((page - 1) * limit);
 
